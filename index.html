@@ -160,10 +160,10 @@ function handleTouch(e){
   tX=(t.clientX-r.left)/r.width*W;
   tY=(t.clientY-r.top)/r.height*H;
 }
-C.addEventListener('touchstart',function(e){e.preventDefault();handleTouch(e);if(state==0&&tX<W*0.5)playGame();initAudio()});
-C.addEventListener('touchmove',function(e){e.preventDefault();handleTouch(e)});
-C.addEventListener('touchcancel',function(e){e.preventDefault();tX=null;tY=null;tA=false});
-C.addEventListener('touchend',function(e){e.preventDefault();tX=null;tY=null;tA=false});
+C.addEventListener('touchstart',function(e){handleTouch(e);if(state==0)playGame();initAudio()});
+C.addEventListener('touchmove',function(e){handleTouch(e)});
+C.addEventListener('touchcancel',function(e){tX=null;tY=null;tA=false});
+C.addEventListener('touchend',function(e){tX=null;tY=null;tA=false});
 document.addEventListener("keydown",function(e){keys[e.key.toLowerCase()]=1;if(e.key=="r"&&state==0)playGame()});
 document.addEventListener("keyup",function(e){keys[e.key.toLowerCase()]=0});
 window.addEventListener("keydown",function(e){if(e.key==" "||e.key=="ArrowUp"||e.key=="ArrowDown")e.preventDefault()});
