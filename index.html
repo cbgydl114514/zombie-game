@@ -21,7 +21,7 @@
 <div class="sb">杀出一条血路</div>
 <div style="color:#888;font-size:12px;margin-bottom:10px">🎮 WASD移动 | 🔫 自动射击</div>
 <div class="dr" id="dG"></div>
-<button class="btn br" id="startBtn">🚀 开始游戏</button>
+<button class="btn br" id="startBtn" onclick="playGame()">🚀 开始游戏</button>
 <button class="btn bb bs" onclick="showShop()">🏪 局外成长</button>
 <button class="btn bp bs" onclick="showSS()">🌍 选择关卡</button>
 <div style="color:#666;font-size:11px;margin-top:10px">🪙 金币: <span id="mg">0</span></div>
@@ -187,35 +187,4 @@ resizeCanvas();
 </script>
 <div id="dbg" style="position:fixed;bottom:0;left:0;right:0;background:rgba(0,0,0,0.9);color:#0f0;font-size:11px;padding:4px;z-index:999;max-height:100px;overflow-y:auto;display:none"></div>
 </body>
-</h
-// MOBILE START: robust game start handling
-var startB// GAME START: simplest possible mobile-friendly approach
-var WS=document.getElementById("W");
-WS.addEventListener("touchend",function(e){
-  if(state==0)playGame();
-});
-// Button click fallback
-var startBtn=document.getElementById("startBtn");
-if(startBtn){
-  startBtn.addEventListener("click",function(){playGame()});
-  startBtn.addEventListener("touchend",function(e){e.preventDefault();playGame()});
-}
-// Keyboard shortcut
-document.addEventListener("keydown",function(e){if(e.key=="r"&&state==0)playGame()});
-art handling
-var startBtn=document.getElementById("startBtn");
-if(startBtn){
-  startBtn.addEventListener("touchend",function(e){e.preventDefault();playGame()});
-  startBtn.addEventListener("click",function(e){playGame()});
-}
-// Also start game on tap anywhere on menu screen
-var menuScreen=document.getElementById("mS");
-menuScreen.addEventListener("touchend",function(e){
-  if(state!=0)return;
-  var btn=e.target.closest("button");
-  if(!btn||btn.id=="startBtn"){e.preventDefault();playGame()}
-});
-// Ensure canvas touch doesn't interfere when menu is showing
-// Remove the old auto-start from canvas touch
-tml>
-
+</html>
