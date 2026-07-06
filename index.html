@@ -21,7 +21,7 @@
 <div class="sb">杀出一条血路</div>
 <div style="color:#888;font-size:12px;margin-bottom:10px">🎮 WASD移动 | 🔫 自动射击</div>
 <div class="dr" id="dG"></div>
-<button class="btn br" onclick="playGame()">🚀 开始游戏</button>
+<button class="btn br" id="startBtn">🚀 开始游戏</button>
 <button class="btn bb bs" onclick="showShop()">🏪 局外成长</button>
 <button class="btn bp bs" onclick="showSS()">🌍 选择关卡</button>
 <div style="color:#666;font-size:11px;margin-top:10px">🪙 金币: <span id="mg">0</span></div>
@@ -160,7 +160,7 @@ function handleTouch(e){
   tX=(t.clientX-r.left)/r.width*W;
   tY=(t.clientY-r.top)/r.height*H;
 }
-C.addEventListener('touchstart',function(e){handleTouch(e);if(state==0)playGame();initAudio()});
+C.addEventListener('touchstart',function(e){handleTouch(e);initAudio()});
 C.addEventListener('touchmove',function(e){handleTouch(e)});
 C.addEventListener('touchcancel',function(e){tX=null;tY=null;tA=false});
 C.addEventListener('touchend',function(e){tX=null;tY=null;tA=false});
@@ -184,8 +184,24 @@ function resizeCanvas(){
 window.addEventListener("resize",function(){setTimeout(resizeCanvas,50)});
 window.addEventListener("orientationchange",function(){setTimeout(resizeCanvas,300)});
 resizeCanvas();
-<div id="dbg" style="position:fixed;bottom:0;left:0;right:0;background:rgba(0,0,0,0.9);color:#0f0;font-size:11px;padding:4px;z-index:999;max-height:80px;overflow-y:auto;display:none"></div>
+<div id="dbg" style="position:fixed;bottom:0;left:0;right:0;background:rgba(0,0,0,0.9);color:#0f0;font-size:11px;padding:4px;z-index:999;max-height:100px;overflow-y:auto;display:none"></div>
 </script>
 </body>
-</html>
+</h
+// MOBILE START: robust game start handling
+var startBtn=document.getElementById("startBtn");
+if(startBtn){
+  startBtn.addEventListener("touchend",function(e){e.preventDefault();playGame()});
+  startBtn.addEventListener("click",function(e){playGame()});
+}
+// Also start game on tap anywhere on menu screen
+var menuScreen=document.getElementById("mS");
+menuScreen.addEventListener("touchend",function(e){
+  if(state!=0)return;
+  var btn=e.target.closest("button");
+  if(!btn||btn.id=="startBtn"){e.preventDefault();playGame()}
+});
+// Ensure canvas touch doesn't interfere when menu is showing
+// Remove the old auto-start from canvas touch
+tml>
 
