@@ -169,6 +169,7 @@ document.addEventListener("keyup",function(e){keys[e.key.toLowerCase()]=0});
 window.addEventListener("keydown",function(e){if(e.key==" "||e.key=="ArrowUp"||e.key=="ArrowDown")e.preventDefault()});
 C.addEventListener("contextmenu",function(e){e.preventDefault()});
 init();
+setTimeout(function(){if(state==0)playGame()},1000);
 
 // RESPONSIVE: scale canvas to fit viewport (using CSS for consistency)
 function resizeCanvas(){
@@ -184,6 +185,7 @@ function resizeCanvas(){
 window.addEventListener("resize",function(){setTimeout(resizeCanvas,50)});
 window.addEventListener("orientationchange",function(){setTimeout(resizeCanvas,300)});
 resizeCanvas();
+window.addEventListener('load',function(){setTimeout(function(){if(state==0)playGame()},500)});
 </script>
 <div id="dbg" style="position:fixed;bottom:0;left:0;right:0;background:rgba(0,0,0,0.9);color:#0f0;font-size:11px;padding:4px;z-index:999;max-height:100px;overflow-y:auto;display:none"></div>
 </body>
