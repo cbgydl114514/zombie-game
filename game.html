@@ -1,0 +1,153 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>僵尸前线 - 纯净版</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;user-select:none}
+body{background:#000;display:flex;justify-content:center;align-items:center;min-height:100dvh;font-family:Microsoft YaHei,sans-serif}
+#W{position:relative;overflow:hidden;border:2px solid #f44;border-radius:10px}
+canvas{display:block;width:100%;height:100%;background:#1a1a2e;touch-action:none}
+#M{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.92);display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:10;padding:20px}
+#M h1{font-size:7vw;color:#f44;margin-bottom:4px}
+#M .s{color:#fa0;font-size:3.5vw;margin-bottom:12px}
+.B{padding:12px 30px;font-size:4vw;font-weight:bold;border:none;border-radius:50px;cursor:pointer;font-family:inherit;margin:4px;min-width:200px}
+.br{background:#f44;color:#fff}
+.bb{background:#48f;color:#fff}
+#dbg{position:fixed;bottom:0;left:0;right:0;background:rgba(0,0,0,0.95);color:#0f0;font-size:10px;padding:4px;z-index:999;max-height:80px;overflow-y:auto;display:none}
+</style>
+</head>
+<body>
+<div id="W">
+<canvas id="C" width="900" height="600"></canvas>
+<div id="M">
+<h1>🧟 僵尸前线</h1>
+<div class="s">杀出一条血路</div>
+<button class="B br" onclick="Gs()">🚀 开始游戏</button>
+</div>
+</div>
+<div id="dbg"></div>
+<script>
+var C=document.getElementById("C"),ctx=C.getContext("2d");
+var W=document.getElementById("W"),M=document.getElementById("M"),D=document.getElementById("dbg");
+function log(m){D.style.display="block";D.innerHTML+="<div>"+m+"</div>";if(D.children>10)D.removeChild(D.firstChild)}
+window.onerror=function(m,u,l){log("ERR: "+m+" line:"+l)};
+log("游戏加载完成");
+function rs(){
+  var vw=window.innerWidth,vh=window.innerHeight,s=Math.min(vw/900,vh/600);
+  W.style.width=Math.round(900*s)+"px";
+  W.style.height=Math.round(600*s)+"px";
+}
+window.addEventListener("resize",rs);rs();
+var state=0,pl={x:80,y:300,hp:100,mH:100,spd:3},zoms=[],bullets=[];
+function initPl(){pl={x:80,y:300,hp:100,mH:100,spd:3};state=1;zoms=[];bullets=[]}
+function Gs(){
+  log("开始游戏被点击 state="+state);
+  M.style.display="none";
+  if(state!=0)return;
+  initPl();
+  state=1;
+  if(!window.ani)loop();
+}
+function loop(){
+  up();dr();window.ani=requestAnimationFrame(loop);
+}
+function up(){
+  if(state!=1)return;
+  // Move player towards touch
+  if(window.tA&&window.tX!=null){
+    var dx=window.tX-pl.x,dy=window.tY-pl.y,d=Math.sqrt(dx*dx+dy*dy);
+    if(d>5){pl.x+=dx/d*pl.spd;pl.y+=dy/d*pl.spd}
+    pl.x=Math.max(20,Math.min(pl.x,320));
+    pl.y=Math.max(20,Math.min(pl.y,580));
+  }
+  // Spawn zombies
+  if(Math.random()<0.02&&zoms.length<8){
+    zoms.push({x:920,y:100+Math.random()*400,hp:30,spd:0.8+Math.random()*0.3});
+  }
+  // Move zombies
+  for(var i=zoms.length-1;i>=0;i--){
+    var z=zoms[i];
+    var dx=pl.x-z.x,dy=pl.y-z.y,d=Math.sqrt(dx*dx+dy*dy);
+    if(d>10){z.x+=dx/d*z.spd;z.y+=dy/d*z.spd}
+    if(d<20){pl.hp-=1;zoms.splice(i,1);if(pl.hp<=0)endG()}
+    if(z.x<-50)zoms.splice(i,1);
+  }
+  // Auto shoot
+  if(zoms.length>0&&(!window.st||Date.now()-window.st>200)){
+    window.st=Date.now();
+    for(var j=0;j<zoms.length;j++){
+      var z=zoms[j],dx=z.x-pl.x,dy=z.y-pl.y,d=Math.sqrt(dx*dx+dy*dy);
+      if(d>1)bullets.push({x:pl.x+20,y:pl.y,vx:dx/d*8,vy:dy/d*8,lf:40});
+      break;
+    }
+  }
+  for(var i=bullets.length-1;i>=0;i--){
+    var b=bullets[i];b.x+=b.vx;b.y+=b.vy;b.lf--;
+    if(b.lf<=0||b.x>930||b.x<-30||b.y<-30||b.y>630){bullets.splice(i,1);continue}
+    for(var j=zoms.length-1;j>=0;j--){
+      var z=zoms[j];
+      if(Math.abs(b.x-z.x)<25&&Math.abs(b.y-z.y)<25){
+        z.hp-=15;bullets.splice(i,1);
+        if(z.hp<=0)zoms.splice(j,1);
+        break;
+      }
+    }
+  }
+}
+function dr(){
+  ctx.fillStyle="#1a1a2e";ctx.fillRect(0,0,900,600);
+  // Grid
+  ctx.strokeStyle="rgba(255,255,255,0.03)";
+  for(var x=0;x<900;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,600);ctx.stroke()}
+  for(var y=0;y<600;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(900,y);ctx.stroke()}
+  // Player
+  ctx.fillStyle="#48f";ctx.shadowColor="#4df";ctx.shadowBlur=10;
+  ctx.beginPath();ctx.moveTo(pl.x+15,pl.y-12);ctx.lineTo(pl.x+30,pl.y);ctx.lineTo(pl.x+15,pl.y+12);
+  ctx.lineTo(pl.x-15,pl.y+12);ctx.lineTo(pl.x-15,pl.y-12);ctx.closePath();ctx.fill();
+  ctx.shadowBlur=0;
+  // HP
+  ctx.fillStyle="#fff";ctx.font="14px sans-serif";ctx.fillText("❤ "+Math.floor(pl.hp)+"/"+pl.mH,10,20);
+  // Zombies
+  zoms.forEach(function(z){
+    ctx.fillStyle="#4c4";ctx.shadowColor="#4c4";ctx.shadowBlur=5;
+    ctx.beginPath();ctx.arc(z.x,z.y,18,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;
+    ctx.fillStyle="#000";ctx.fillRect(z.x-5,z.y-5,4,4);ctx.fillRect(z.x+3,z.y-5,4,4);
+    ctx.fillStyle="#f44";ctx.fillRect(z.x-6,z.y+3,12,3);
+    ctx.fillStyle="rgba(0,0,0,0.5)";ctx.fillRect(z.x-18,z.y-28,36,4);
+    ctx.fillStyle="#f44";ctx.fillRect(z.x-18,z.y-28,36*(z.hp/30),4);
+  });
+  // Bullets
+  bullets.forEach(function(b){
+    ctx.fillStyle="#ff0";ctx.shadowColor="#ff0";ctx.shadowBlur=6;
+    ctx.beginPath();ctx.arc(b.x,b.y,4,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;
+  });
+}
+function endG(){state=4;log("游戏结束! 刷新重玩");M.style.display="flex"}
+// Touch
+C.addEventListener("touchstart",function(e){
+  var t=e.touches[0],r=C.getBoundingClientRect();
+  window.tX=(t.clientX-r.left)/r.width*900;
+  window.tY=(t.clientY-r.top)/r.height*600;
+  window.tA=true;
+  log("touch: "+Math.round(window.tX)+","+Math.round(window.tY));
+});
+C.addEventListener("touchmove",function(e){
+  var t=e.touches[0],r=C.getBoundingClientRect();
+  window.tX=(t.clientX-r.left)/r.width*900;
+  window.tY=(t.clientY-r.top)/r.height*600;
+  window.tA=true;
+});
+C.addEventListener("touchend",function(){window.tA=false});
+C.addEventListener("touchcancel",function(){window.tA=false});
+// Keyboard
+document.addEventListener("keydown",function(e){
+  if(e.key=="r"&&state==0)Gs();
+  if(e.key==" "||e.key=="ArrowUp"||e.key=="ArrowDown")e.preventDefault();
+});
+log("初始化完成。屏幕尺寸: "+window.innerWidth+"x"+window.innerHeight);
+setTimeout(function(){log("点击开始游戏或按 R 键开始")},500);
+</script>
+</body>
+</html>
