@@ -160,11 +160,11 @@ function handleTouch(e){
   tX=(t.clientX-r.left)/r.width*W;
   tY=(t.clientY-r.top)/r.height*H;
 }
-C.addEventListener('touchstart',function(e){handleTouch(e);initAudio()});
+// Touch handler removed - game starts via WS touchend
 C.addEventListener('touchmove',function(e){handleTouch(e)});
 C.addEventListener('touchcancel',function(e){tX=null;tY=null;tA=false});
 C.addEventListener('touchend',function(e){tX=null;tY=null;tA=false});
-document.addEventListener("keydown",function(e){keys[e.key.toLowerCase()]=1;if(e.key=="r"&&state==0)playGame()});
+document.addEventListener("keydown",function(e){keys[e.key.toLowerCase()]=1});
 document.addEventListener("keyup",function(e){keys[e.key.toLowerCase()]=0});
 window.addEventListener("keydown",function(e){if(e.key==" "||e.key=="ArrowUp"||e.key=="ArrowDown")e.preventDefault()});
 C.addEventListener("contextmenu",function(e){e.preventDefault()});
@@ -189,6 +189,20 @@ resizeCanvas();
 </body>
 </h
 // MOBILE START: robust game start handling
+var startB// GAME START: simplest possible mobile-friendly approach
+var WS=document.getElementById("W");
+WS.addEventListener("touchend",function(e){
+  if(state==0)playGame();
+});
+// Button click fallback
+var startBtn=document.getElementById("startBtn");
+if(startBtn){
+  startBtn.addEventListener("click",function(){playGame()});
+  startBtn.addEventListener("touchend",function(e){e.preventDefault();playGame()});
+}
+// Keyboard shortcut
+document.addEventListener("keydown",function(e){if(e.key=="r"&&state==0)playGame()});
+art handling
 var startBtn=document.getElementById("startBtn");
 if(startBtn){
   startBtn.addEventListener("touchend",function(e){e.preventDefault();playGame()});
